@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rohit VR Limbachiya — Cyber Security Portfolio</title>
+  <meta name="description" content="Hacker-style animated portfolio with neon VFX, matrix rain, and cyber security theme." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#05070a;           /* Deep black */
+      --panel:#0c1118;        /* Card bg */
+      --glass:rgba(255,255,255,.06);
+      --text:#E6F1FF;         /* Primary text */
+      --muted:#8aa2c0;        /* Secondary text */
+      --neon:#0ef;            /* Cyan neon */
+      --accent:#9d00ff;       /* Purple neon */
+      --good:#00ffa3;         /* Green */
+      --warn:#ffb020;         /* Amber */
+      --danger:#ff3b81;       /* Pink-red */
+      --grid: rgba(14,255,255,.08);
+      --radius:22px;
+      --shadow:0 10px 30px rgba(0,0,0,.45), 0 0 30px rgba(14,255,255,.05);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; background:radial-gradient(1200px 800px at 50% -20%, rgba(157,0,255,.20), transparent 60%), var(--bg);
+      color:var(--text); font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; line-height:1.6;
+      overflow-x:hidden;
+    }
+
+    /* Grid background */
+    .grid-overlay{position:fixed; inset:0; pointer-events:none; background-image:linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(ellipse at 50% 40%, black 50%, transparent 85%);} 
+
+    /* Matrix Rain Canvas */
+    #matrix{position:fixed; inset:0; z-index:0; opacity:.25;}
+
+    header{position:sticky; top:0; z-index:20; backdrop-filter: blur(6px); background:linear-gradient(180deg, rgba(5,7,10,.85), rgba(5,7,10,.35)); border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{display:flex; align-items:center; justify-content:space-between; max-width:1200px; margin:auto; padding:14px 22px;}
+    .brand{font-family:Orbitron, sans-serif; letter-spacing:.12em; font-weight:800; text-transform:uppercase; display:flex; gap:10px; align-items:center}
+    .brand .dot{width:10px; height:10px; border-radius:50%; background: radial-gradient(circle at 30% 30%, #fff, var(--neon)); box-shadow:0 0 12px var(--neon), 0 0 24px var(--neon)}
+    .nav a{color:var(--muted); text-decoration:none; margin:0 10px; font-weight:600}
+    .nav a:hover{color:var(--text)}
+    .cta{padding:10px 16px; border-radius:999px; background:linear-gradient(90deg, var(--neon), var(--accent)); color:#001014; font-weight:800; border:none; cursor:pointer; box-shadow:0 0 18px rgba(14,255,255,.45);} 
+
+    main{position:relative; z-index:1}
+
+    /* Hero */
+    .hero{max-width:1200px; margin:64px auto 10px; padding:26px; display:grid; grid-template-columns: 1.2fr .8fr; gap:28px; align-items:center}
+    .hero-card{background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.00)); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); padding:28px; box-shadow:var(--shadow); position:relative; overflow:hidden}
+    .scanline{position:absolute; inset:0; background:repeating-linear-gradient( to bottom, rgba(255,255,255,.035) 0, rgba(255,255,255,.035) 1px, transparent 2px ); mix-blend-mode:soft-light; pointer-events:none}
+    .glow-ring{position:absolute; inset:-40px; border-radius:inherit; filter: blur(50px); background: conic-gradient(from 0deg, rgba(14,255,255,.14), rgba(157,0,255,.14), rgba(14,255,255,.14)); opacity:.6}
+    .hero h1{font-family:Orbitron, sans-serif; font-size: clamp(28px, 5vw, 54px); margin:0 0 12px; letter-spacing:.06em; text-transform:uppercase}
+    .subtitle{color:var(--muted); font-weight:600; margin-bottom:18px}
+    .badge-row{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0 24px}
+    .badge{border:1px solid rgba(255,255,255,.10); background:rgba(255,255,255,.03); padding:6px 10px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:.05em}
+    .badge .dot{display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; background:var(--good); box-shadow:0 0 10px var(--good)}
+
+    .actions{display:flex; gap:12px; flex-wrap:wrap}
+    .ghost{padding:10px 16px; border-radius:999px; border:1px solid rgba(255,255,255,.12); background:transparent; color:var(--text); font-weight:700; cursor:pointer}
+    .ghost:hover{border-color:var(--neon); box-shadow:0 0 16px rgba(14,255,255,.25)}
+
+    /* Avatar panel */
+    .avatar-card{position:relative; background: radial-gradient(120px 120px at 20% 20%, rgba(14,255,255,.10), transparent), linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.00)); border:1px solid rgba(255,255,255,.08); border-radius:var(--radius); padding:20px; display:grid; place-items:center; overflow:hidden; box-shadow:var(--shadow)}
+    .avatar-wrap{position:relative; width:min(340px, 72%); aspect-ratio:1; border-radius:50%; display:grid; place-items:center; background:radial-gradient(circle at 50% 40%, rgba(14,255,255,.25), rgba(157,0,255,.12), transparent 70%);} 
+    .avatar-wrap::before{content:""; position:absolute; inset:-6px; border-radius:50%; padding:4px; background:conic-gradient(var(--neon), var(--accent), var(--neon)); -webkit-mask:linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite:xor; mask-composite:exclude; animation:spin 6s linear infinite}
+    .avatar{width:92%; height:92%; border-radius:50%; object-fit:cover; filter: contrast(1.08) saturate(1.05) brightness(1.05); box-shadow:0 20px 60px rgba(0,0,0,.6)}
+    .avatar-glow{position:absolute; inset:-20px; border-radius:50%; background:radial-gradient(circle at 50% 40%, rgba(14,255,255,.35), rgba(157,0,255,.25), transparent 65%); filter:blur(40px); opacity:.7}
+    .avatar-upload{margin-top:16px; opacity:.85}
+    @keyframes spin{to{transform:rotate(1turn)}}
+
+    /* Sections */
+    section{max-width:1200px; margin:40px auto; padding:0 26px}
+    .section-title{font-family:Orbitron, sans-serif; text-transform:uppercase; letter-spacing:.15em; font-weight:800; margin:0 0 16px; font-size:24px}
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.00)); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px}
+
+    /* About */
+    .about{display:grid; grid-template-columns:1fr 1fr; gap:18px}
+    .kv-pairs{display:grid; grid-template-columns:160px 1fr; row-gap:10px; column-gap:12px}
+    .kv-key{color:var(--muted); text-transform:uppercase; letter-spacing:.12em; font-weight:800; font-size:12px}
+    .kv-val{font-weight:700}
+
+    /* Skills */
+    .skills{display:grid; grid-template-columns: repeat(4, 1fr); gap:14px}
+    .skill{position:relative; padding:16px; border-radius:16px; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.02)}
+    .skill h4{margin:2px 0 8px; font-size:14px; text-transform:uppercase; letter-spacing:.14em}
+    .bar{height:8px; background:rgba(255,255,255,.08); border-radius:999px; overflow:hidden}
+    .fill{height:100%; width:0; background:linear-gradient(90deg, var(--neon), var(--accent)); box-shadow:0 0 14px rgba(14,255,255,.45)}
+
+    /* Certifications */
+    .certs{display:grid; grid-template-columns:repeat(3, 1fr); gap:14px}
+    .cert{padding:16px; border-radius:16px; border:1px dashed rgba(255,255,255,.14); background:rgba(255,255,255,.02)}
+    .cert small{color:var(--muted)}
+
+    /* Timeline */
+    .timeline{position:relative; padding-left:18px}
+    .timeline::before{content:""; position:absolute; left:6px; top:0; bottom:0; width:2px; background:linear-gradient(var(--neon), var(--accent))}
+    .time-item{margin:16px 0 0 0; padding-left:16px; position:relative}
+    .time-item::before{content:""; position:absolute; left:-12px; top:4px; width:10px; height:10px; border-radius:50%; background:var(--neon); box-shadow:0 0 12px var(--neon)}
+
+    /* Contact */
+    .contact{display:grid; grid-template-columns:1fr .9fr; gap:14px}
+    .contact .btns{display:flex; flex-wrap:wrap; gap:10px}
+    .social{display:flex; gap:10px; flex-wrap:wrap}
+    .icon-btn{display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid rgba(255,255,255,.12); text-decoration:none; color:var(--text); font-weight:700; background:rgba(255,255,255,.02)}
+    .icon-btn:hover{border-color:var(--neon); box-shadow:0 0 16px rgba(14,255,255,.25)}
+
+    /* Footer */
+    footer{max-width:1200px; margin:30px auto 80px; padding:0 26px; color:var(--muted); text-align:center}
+
+    /* Responsive */
+    @media (max-width: 980px){
+      .hero{grid-template-columns:1fr; gap:22px}
+      .about{grid-template-columns:1fr}
+      .skills{grid-template-columns: repeat(2, 1fr)}
+      .certs{grid-template-columns:1fr 1fr}
+      .contact{grid-template-columns:1fr}
+    }
+    @media (max-width: 560px){
+      .skills{grid-template-columns: 1fr}
+      .certs{grid-template-columns:1fr}
+    }
+
+    /* Glitch effect */
+    .glitch{position:relative; display:inline-block}
+    .glitch::before,.glitch::after{content:attr(data-text); position:absolute; left:0; top:0; width:100%; overflow:hidden; clip-path: inset(0 0 0 0);} 
+    .glitch::before{text-shadow: -2px 0 var(--neon); animation:gl1 2.5s infinite linear alternate-reverse}
+    .glitch::after{text-shadow: 2px 0 var(--accent); animation:gl2 3s infinite linear alternate-reverse}
+    @keyframes gl1{0%{clip-path: inset(0 0 90% 0)} 20%{clip-path: inset(0 0 10% 0)} 40%{clip-path: inset(0 0 80% 0)} 60%{clip-path: inset(0 0 20% 0)} 80%{clip-path: inset(0 0 70% 0)} 100%{clip-path: inset(0 0 5% 0)}}
+    @keyframes gl2{0%{clip-path: inset(90% 0 0 0)} 20%{clip-path: inset(10% 0 0 0)} 40%{clip-path: inset(80% 0 0 0)} 60%{clip-path: inset(20% 0 0 0)} 80%{clip-path: inset(70% 0 0 0)} 100%{clip-path: inset(5% 0 0 0)}}
+
+    /* Neon focus ring */
+    :focus-visible{outline:2px solid var(--neon); outline-offset:3px}
+  </style>
+</head>
+<body>
+  <canvas id="matrix"></canvas>
+  <div class="grid-overlay"></div>
+
+  <header>
+    <nav class="nav">
+      <div class="brand"><span class="dot"></span> Rohit • CyberSec</div>
+      <div class="links">
+        <a href="#about">About</a>
+        <a href="#skills">Skills</a>
+        <a href="#certs">Certificates</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#contact">Contact</a>
+        <button class="cta" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Hire Me</button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-card">
+        <div class="glow-ring"></div>
+        <div class="scanline"></div>
+        <h1 class="glitch" data-text="Ethical Hacker & Cyber Security Learner">Ethical Hacker & Cyber Security Learner</h1>
+        <p class="subtitle">I’m <strong>Rohit Limbachiya</strong> — building my career in <strong>Cyber Security</strong> (BCA student). I love blue-team defense, ethical hacking, and solving problems.</p>
+        <div class="badge-row">
+          <span class="badge"><span class="dot"></span> Available for Internship</span>
+          <span class="badge">Location: India (Remote/Hybrid)</span>
+          <span class="badge">Languages: English • Hindi • Gujarati</span>
+        </div>
+        <div class="actions">
+          <a class="ghost" href="#skills">View Skills</a>
+          <a class="ghost" href="#certs">Certificates</a>
+          <a class="ghost" href="#timeline">Journey</a>
+          <a class="ghost" href="#contact">Contact</a>
+          <a class="cta" href="#projects">Projects (Coming Soon)</a>
+        </div>
+      </div>
+
+      <div class="avatar-card">
+        <div class="avatar-wrap">
+          <div class="avatar-glow"></div>
+          <!-- Your photo will preview here after upload -->
+          <img id="avatar" class="avatar" alt="/Users/apple/Desktop/rohitportfolio website/rohitphoto/rohit.jpg" src="/Users/apple/Desktop/rohitportfolio website/rohitphoto/rohit.jpg"/>
+        </div>
+        <input class="avatar-upload" id="avatarInput" type="file" accept="image/*" />
+        <small style="color:var(--muted)">Tip: Click "Choose File" to add your photo. No path issues, works offline.</small>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <h2 class="section-title">About Me</h2>
+      <div class="panel about">
+        <div>
+          <p>I’m a passionate cyber security learner aiming for a professional role in <strong>defensive security</strong> and <strong>ethical hacking</strong>. I focus on fundamentals, practical labs, and clean documentation. I enjoy making animated, modern portfolios and dashboards too.</p>
+          <p>Goal for 2025: Build hands-on projects in network hardening, incident response playbooks, and web application security. Open to mentorships, internships, and junior roles.</p>
+        </div>
+        <div class="kv-pairs">
+          <div class="kv-key">Name</div><div class="kv-val">Rohit VR Limbachiya</div>
+          <div class="kv-key">Email</div><div class="kv-val"><a href="mailto:rohitnainai8@gmail.com">rohitnainai8@gmail.com</a></div>
+          <div class="kv-key">Phone</div><div class="kv-val"><a href="tel:+919904771461">+91 99047 71461</a></div>
+          <div class="kv-key">LinkedIn</div><div class="kv-val"><a target="_blank" rel="noreferrer noopener" href="https://www.linkedin.com/in/rohit-vr-limbachiya">/in/rohit-vr-limbachiya</a></div>
+          <div class="kv-key">Instagram</div><div class="kv-val"><a target="_blank" rel="noreferrer noopener" href="https://instagram.com/_iamrohit_007_">@_iamrohit_007_</a></div>
+          <div class="kv-key">Education</div><div class="kv-val">BCA (in progress)</div>
+          <div class="kv-key">Interests</div><div class="kv-val">Blue Team • Web Security • CTI • SIEM • Malware Triage</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section id="skills">
+      <h2 class="section-title">Skills</h2>
+      <div class="panel">
+        <div class="skills" id="skillsGrid"><!-- Skills injected by JS for animation --></div>
+      </div>
+    </section>
+
+    <!-- CERTIFICATES / QUALIFICATIONS -->
+    <section id="certs">
+      <h2 class="section-title">Certificates & Resume</h2>
+      <div class="panel certs">
+        <a class="cert" href="Rohit%20Black%20and%20White%20Corporate%20Resume.pdf" target="_blank" title="Open Resume PDF">
+          <h3>📄 Resume — Rohit Limbachiya</h3>
+          <small>Open PDF in new tab</small>
+          <p>Black & White Corporate Resume with education, skills, internships, and profile summary.</p>
+        </a>
+        <a class="cert" href="gmf3ypEXBj2wvfQWC_ifobHAoMjQs9s6bKS_CeTDtnCnebFMCPJN4_1753682791798_completion_certificate%20(1).pdf" target="_blank" title="Open Certificate">
+          <h3>🏅 Forage — Cybersecurity Analyst (IAM)</h3>
+          <small>Issued: July 28, 2025 · Enrolment Code: WDwE85CGzCJtqmmeY · User Code: CeTDtnCnebFMCPJN4</small>
+          <p>Completed practical tasks in IAM fundamentals, strategy assessment, custom IAM solutions, and platform integration.</p>
+        </a>
+        <a class="cert" href="vcKAB5yYAgvemepGQ_mfxGwGDp6WkQmtmTf_CeTDtnCnebFMCPJN4_1754417834510_completion_certificate.pdf" target="_blank" title="Open Certificate">
+          <h3>🏅 Forage — Cybersecurity Job Simulation (Phishing)</h3>
+          <small>Issued: August 5, 2025 · Enrolment Code: bB9QY6ghY7t6pwsoK · User Code: CeTDtnCnebFMCPJN4</small>
+          <p>Designed a phishing email simulation and interpreted the results.</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- TIMELINE / JOURNEY -->
+    <section id="timeline">
+      <h2 class="section-title">Journey</h2>
+      <div class="panel timeline">
+        <div class="time-item"><strong>2025</strong> — Building portfolio, learning SIEM (Splunk), blue-team workflows.</div>
+        <div class="time-item"><strong>2024</strong> — Started BCA, labs in Linux, Bash, Git, and web basics.</div>
+        <div class="time-item"><strong>2023</strong> — First exposure to ethical hacking, networking fundamentals.</div>
+      </div>
+    </section>
+
+    <!-- PROJECTS COMING SOON -->
+    <section id="projects">
+      <h2 class="section-title">Projects (Coming Soon)</h2>
+      <div class="panel">
+        <p>Project ideas lined up:</p>
+        <ul>
+          <li>🎯 <strong>Firewall Ruleset Hardening</strong> — document before/after, metrics, and block-list automation.</li>
+          <li>🛡️ <strong>Incident Response Playbook</strong> — phishing triage + log analysis steps.</li>
+          <li>🕸️ <strong>OWASP Lab Notes</strong> — 10 mini write‑ups with remediation steps.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <h2 class="section-title">Contact</h2>
+      <div class="panel contact">
+        <div>
+          <p>Let’s collaborate. I’m open to internships, junior roles, and mentorships. Reach me via email/phone or DM me on socials.</p>
+          <div class="btns">
+            <a class="icon-btn" href="mailto:rohitnainai8@gmail.com">✉️ Email Me</a>
+            <a class="icon-btn" href="tel:+919904771461">📞 Call</a>
+            <a class="icon-btn" href="#" id="copyEmail">📋 Copy Email</a>
+            <a class="icon-btn" href="#" id="downloadPDF">⬇️ Download Resume (PDF)</a>
+          </div>
+        </div>
+        <div>
+          <div class="social">
+            <a class="icon-btn" target="_blank" rel="noreferrer noopener" href="https://www.linkedin.com/in/rohit-vr-limbachiya">🔗 LinkedIn</a>
+            <a class="icon-btn" target="_blank" rel="noreferrer noopener" href="https://instagram.com/_iamrohit_007_">📷 Instagram</a>
+            <a class="icon-btn" target="_blank" rel="noreferrer noopener" href="https://wa.me/919904771461?text=Hi%20Rohit%2C%20let%27s%20connect">💬 WhatsApp</a>
+            <a class="icon-btn" href="#about">📌 More Details</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    © <span id="year"></span> Rohit Limbachiya • “Stay curious. Stay ethical.”
+  </footer>
+
+  <script>
+    // ===== Matrix Rain Background =====
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+    let w, h, cols, ypos;
+    function size(){ w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; cols = Math.floor(w/20); ypos = Array(cols).fill(0); }
+    function rain(){
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.fillRect(0,0,w,h);
+      ctx.fillStyle = '#0ef';
+      ctx.font = '16pt monospace';
+      ypos.forEach((y, ind) => {
+        const text = String.fromCharCode(0x30A0 + Math.random() * 96);
+        const x = ind * 20;
+        ctx.fillText(text, x, y);
+        if(y > 100 + Math.random() * 10000) ypos[ind] = 0
+        else ypos[ind] = y + 20;
+      });
+      requestAnimationFrame(rain);
+    }
+    window.addEventListener('resize', size); size(); rain();
+
+    // ===== Avatar Upload Preview (no path hassles) =====
+    const avatarInput = document.getElementById('avatarInput');
+    const avatar = document.getElementById('avatar');
+    avatarInput.addEventListener('change', (e)=>{
+      const file = e.target.files?.[0];
+      if(!file) return;
+      const url = URL.createObjectURL(file);
+      avatar.src = url;
+    });
+
+    // ===== Animated Skills =====
+    const skills = [
+      { name:'Communication', val: 88 },
+      { name:'Soft Skills', val: 86 },
+      { name:'Python', val: 72 },
+      { name:'Ethical Hacking', val: 68 },
+      { name:'Linux / Bash', val: 70 },
+      { name:'Networking', val: 74 },
+      { name:'Web Security', val: 65 },
+      { name:'SIEM / Splunk', val: 60 },
+    ];
+    const grid = document.getElementById('skillsGrid');
+    skills.forEach(s=>{
+      const el = document.createElement('div');
+      el.className = 'skill';
+      // FIXED: use backticks for template literal
+      el.innerHTML = `
+        <h4>${s.name}</h4>
+        <div class="bar"><div class="fill"></div></div>
+        <div style="display:flex; justify-content:space-between; margin-top:6px">
+          <small style="color:var(--muted)">Beginner</small>
+          <small style="color:var(--muted)">Expert</small>
+        </div>`;
+      grid.appendChild(el);
+      const fill = el.querySelector('.fill');
+      requestAnimationFrame(()=>{
+        fill.style.transition = 'width 1200ms cubic-bezier(.2,.7,.2,1)';
+        fill.style.width = s.val + '%';
+      });
+    });
+
+    // ===== Copy Email =====
+    document.getElementById('copyEmail').addEventListener('click', (e)=>{
+      e.preventDefault();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText('rohitnainai8@gmail.com');
+      }
+      e.target.textContent = '✅ Email Copied';
+      setTimeout(()=> e.target.textContent = '📋 Copy Email', 1400);
+    });
+
+    // ===== Download Resume PDF (opens in new tab) =====
+    document.getElementById('downloadPDF').addEventListener('click', (e)=>{
+      e.preventDefault();
+      window.open('Rohit%20Black%20and%20White%20Corporate%20Resume.pdf', '_blank');
+    });
+
+    // ===== Footer Year =====
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // ===== Smooth hash scroll on nav links =====
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', (e)=>{
+        const id = a.getAttribute('href');
+        const el = document.querySelector(id);
+        if(el){ e.preventDefault(); el.scrollIntoView({behavior:'smooth'}); }
+      });
+    });
+  </script>
+</body>
+</html>
